@@ -68,12 +68,14 @@ class BasicUnit(nn.Module):
         self.left_part = round(c_tag * inplanes)
         self.right_part_in = inplanes - self.left_part
         self.right_part_out = outplanes - self.left_part
-        self.conv1 = nn.Conv2d(self.right_part_in, self.right_part_out, kernel_size=1, bias=False)
+        self.conv1 = nn.Conv2d(
+            self.right_part_in, self.right_part_out, kernel_size=1, bias=False)
         self.bn1 = nn.BatchNorm2d(self.right_part_out)
         self.conv2 = nn.Conv2d(self.right_part_out, self.right_part_out, kernel_size=3, padding=1, bias=False,
                                groups=self.right_part_out)
         self.bn2 = nn.BatchNorm2d(self.right_part_out)
-        self.conv3 = nn.Conv2d(self.right_part_out, self.right_part_out, kernel_size=1, bias=False)
+        self.conv3 = nn.Conv2d(self.right_part_out,
+                               self.right_part_out, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(self.right_part_out)
         self.activation = activation(inplace=True)
 
@@ -113,12 +115,14 @@ class DownsampleUnit(nn.Module):
 
         self.conv1r = nn.Conv2d(inplanes, inplanes, kernel_size=1, bias=False)
         self.bn1r = nn.BatchNorm2d(inplanes)
-        self.conv2r = nn.Conv2d(inplanes, inplanes, kernel_size=3, stride=2, padding=1, bias=False, groups=inplanes)
+        self.conv2r = nn.Conv2d(inplanes, inplanes, kernel_size=3,
+                                stride=2, padding=1, bias=False, groups=inplanes)
         self.bn2r = nn.BatchNorm2d(inplanes)
         self.conv3r = nn.Conv2d(inplanes, inplanes, kernel_size=1, bias=False)
         self.bn3r = nn.BatchNorm2d(inplanes)
 
-        self.conv1l = nn.Conv2d(inplanes, inplanes, kernel_size=3, stride=2, padding=1, bias=False, groups=inplanes)
+        self.conv1l = nn.Conv2d(inplanes, inplanes, kernel_size=3,
+                                stride=2, padding=1, bias=False, groups=inplanes)
         self.bn1l = nn.BatchNorm2d(inplanes)
         self.conv2l = nn.Conv2d(inplanes, inplanes, kernel_size=1, bias=False)
         self.bn2l = nn.BatchNorm2d(inplanes)
@@ -181,14 +185,18 @@ class ShuffleNetV2(nn.Module):
 
         self.num_of_channels = {0.5: [24, 48, 96, 192, 1024], 1: [24, 116, 232, 464, 1024],
                                 1.5: [24, 176, 352, 704, 1024], 2: [24, 244, 488, 976, 2048]}
-        self.c = [_make_divisible(chan, groups) for chan in self.num_of_channels[scale]]
-        self.n = [3, 8, 3]  # TODO: should be [3,7,3]
-        self.conv1 = nn.Conv2d(in_channels, self.c[0], kernel_size=3, bias=False, stride=2, padding=1)
+        self.c = [_make_divisible(chan, groups)
+                  for chan in self.num_of_channels[scale]]
+        # self.n = [3, 8, 3]  # TODO: should be [3,7,3]
+        self.n = [3, 7, 3]
+        self.conv1 = nn.Conv2d(
+            in_channels, self.c[0], kernel_size=3, bias=False, stride=2, padding=1)
         self.bn1 = nn.BatchNorm2d(self.c[0])
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2)
         self.shuffles = self._make_shuffles()
 
-        self.conv_last = nn.Conv2d(self.c[-2], self.c[-1], kernel_size=1, bias=False)
+        self.conv_last = nn.Conv2d(
+            self.c[-2], self.c[-1], kernel_size=1, bias=False)
         self.bn_last = nn.BatchNorm2d(self.c[-1])
         self.avgpool = nn.AdaptiveAvgPool2d(1)
         self.fc = nn.Linear(self.c[-1], self.num_classes)
@@ -234,7 +242,8 @@ class ShuffleNetV2(nn.Module):
 
         for i in range(len(self.c) - 2):
             name = stage_name + "_{}".format(i)
-            module = self._make_stage(inplanes=self.c[i], outplanes=self.c[i + 1], n=self.n[i], stage=i)
+            module = self._make_stage(
+                inplanes=self.c[i], outplanes=self.c[i + 1], n=self.n[i], stage=i)
             modules[name] = module
 
         return nn.Sequential(modules)
@@ -271,11 +280,11 @@ if __name__ == "__main__":
     print(model3)
     x = torch.randn(1, 2, 224, 224)
     print(model3(x))
-    model4 = ShuffleNetV2( num_classes=10, groups=3, c_tag=0.2)
+    model4 = ShuffleNetV2(num_classes=10, groups=3, c_tag=0.2)
     print(model4)
     model4_size = 769
     x2 = torch.randn(1, 3, model4_size, model4_size, )
     print(model4(x2))
-    model5 = ShuffleNetV2(scale=2.0,num_classes=10, SE=True, residual=True)
+    model5 = ShuffleNetV2(scale=2.0, num_classes=10, SE=True, residual=True)
     x3 = torch.randn(1, 3, 196, 196)
     print(model5(x3))
