@@ -80,6 +80,10 @@ def get_loaders(dataroot, val_batch_size, train_batch_size, input_size, workers)
                                  device_id=0, data_dir=os.path.join(dataroot, 'train'), crop=224)
     val_pipe = HybridValPipe(batch_size=val_batch_size, num_threads=workers,
                              device_id=0, data_dir=os.path.join(dataroot, 'val'), crop=224, size=256)
+
+    train_pipe.build()
+    val_pipe.build()
+
     train_loader = DALIClassificationIterator(
         train_pipe, train_pipe.epoch_size("Reader"))
     val_loader = DALIClassificationIterator(
