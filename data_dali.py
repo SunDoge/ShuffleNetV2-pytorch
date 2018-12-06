@@ -83,8 +83,8 @@ class ImageNetIterator(DALIClassificationIterator):
 
     def __next__(self):
         data = super().__next__()
-        input = data[0]["data"]
-        target = data[0]["label"].squeeze().cuda().long()
+        input = data[0][0][0]
+        target = data[0][1][0].cuda().long()
         return input, target
 
     def next(self):
