@@ -87,6 +87,9 @@ class ImageNetIterator(DALIClassificationIterator):
         target = data[0]["label"].squeeze().cuda().long()
         return input, target
 
+    def next(self):
+        return super().__next__()
+
 
 def get_loaders(dataroot, val_batch_size, train_batch_size, input_size, workers):
     train_pipe = HybridTrainPipe(batch_size=train_batch_size, num_threads=workers,
