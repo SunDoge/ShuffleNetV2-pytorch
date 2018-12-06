@@ -2,6 +2,7 @@ from nvidia.dali.pipeline import Pipeline
 from nvidia.dali import ops, types
 from nvidia.dali.plugin.pytorch import DALIClassificationIterator
 import os
+import math
 
 
 class HybridTrainPipe(Pipeline):
@@ -75,6 +76,12 @@ class HybridValPipe(Pipeline):
         return [output, self.labels]
 
 
+class ImageNetIterator(DALIClassificationIterator):
+
+    def __len__(self):
+        return math.ceil(self._size / self.batch_size)
+
+
 def get_loaders(dataroot, val_batch_size, train_batch_size, input_size, workers):
     train_pipe = HybridTrainPipe(batch_size=train_batch_size, num_threads=workers,
                                  device_id=0, data_dir=os.path.join(dataroot, 'train'), crop=224)
@@ -84,8 +91,8 @@ def get_loaders(dataroot, val_batch_size, train_batch_size, input_size, workers)
     train_pipe.build()
     val_pipe.build()
 
-    train_loader = DALIClassificationIterator(
+    train_loader = ImageNetIterator(
         train_pipe, train_pipe.epoch_size("Reader"))
-    val_loader = DALIClassificationIterator(
+    val_loader = ImageNetIterator(
         val_pipe, val_pipe.epoch_size("Reader"))
     return train_loader, val_loader
