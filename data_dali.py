@@ -97,7 +97,7 @@ class ImageNetIterator(DALIClassificationIterator):
 
 def get_loaders(dataroot, val_batch_size, train_batch_size, input_size, workers):
     train_pipe = HybridTrainPipe(batch_size=train_batch_size, num_threads=workers,
-                                 device_id=5, data_dir=os.path.join(dataroot, 'train'), crop=224, dali_cpu=False)
+                                 device_id=4, data_dir=os.path.join(dataroot, 'train'), crop=224, dali_cpu=False)
     val_pipe = HybridValPipe(batch_size=val_batch_size, num_threads=workers,
                              device_id=5, data_dir=os.path.join(dataroot, 'val'), crop=224, size=256, dali_cpu=False)
 
